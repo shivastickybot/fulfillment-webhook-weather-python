@@ -49,27 +49,6 @@ def webhook():
     return r
 
 
-ProcessRequest methodPython
-
-def processRequest(req):
-    if req.get("result").get("action")=="yahooWeatherForecast":
-        baseurl = "https://query.yahooapis.com/v1/public/yql?"
-        yql_query = makeYqlQuery(req)
-        if yql_query is None:
-           return {}
-        yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
-        result = urlopen(yql_url).read()
-        data = json.loads(result)
-        res = makeWebhookResult(data)
-    elif req.get("result").get("action")=="getjoke":
-        baseurl = "http://api.icndb.com/jokes/random"
-        result = urlopen(baseurl).read()
-        data = json.loads(result)
-        res = makeWebhookResultForGetJoke(data)
-    else:
-        return {}
-
- return res
 
 
 def processRequest(req):
