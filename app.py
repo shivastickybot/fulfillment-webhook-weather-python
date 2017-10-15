@@ -49,19 +49,78 @@ def webhook():
     return r
 
 
+ProcessRequest methodPython
+
 def processRequest(req):
-    if req.get("result").get("action") != "yahooWeatherForecast":
+    if req.get("result").get("action")=="yahooWeatherForecast":
+        baseurl = "https://query.yahooapis.com/v1/public/yql?"
+        yql_query = makeYqlQuery(req)
+        if yql_query is None:
+           return {}
+        yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
+        result = urlopen(yql_url).read()
+        data = json.loads(result)
+        res = makeWebhookResult(data)
+    elif req.get("result").get("action")=="getjoke":
+        baseurl = "http://api.icndb.com/jokes/random"
+        result = urlopen(baseurl).read()
+        data = json.loads(result)
+        res = makeWebhookResultForGetJoke(data)
+    else:
         return {}
-    baseurl = "https://query.yahooapis.com/v1/public/yql?"
-    yql_query = makeYqlQuery(req)
-    if yql_query is None:
+
+    return res
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+def processRequest(req):
+    if req.get("result").get("action")=="yahooWeatherForecast":
+        baseurl = "https://query.yahooapis.com/v1/public/yql?"
+        yql_query = makeYqlQuery(req)
+        if yql_query is None:
+           return {}
+        yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
+        result = urlopen(yql_url).read()
+        data = json.loads(result)
+        res = makeWebhookResult(data)
+    elif req.get("result").get("action")=="getjoke":
+        baseurl = "http://api.icndb.com/jokes/random"
+        result = urlopen(baseurl).read()
+        data = json.loads(result)
+        res = makeWebhookResultForGetJoke(data)
+    else:
         return {}
-    yql_url = baseurl + urlencode({'q': yql_query}) + "&format=json"
-    result = urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult(data)
+ 
     return res
 
+def makeWebhookResultForGetJoke(data):
+    valueString = data.get('value')
+    joke = valueString.get('joke')
+    speechText = joke
+    displayText = joke
+    return {
+        "speech": speechText,
+        "displayText": displayText,
+        # "data": data,
+        # "contextOut": [],
+        "source": "apiai-weather-webhook-sample"
+    }
 
 def makeYqlQuery(req):
     result = req.get("result")
